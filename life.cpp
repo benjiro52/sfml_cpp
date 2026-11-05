@@ -68,5 +68,6 @@ int main() {
         window.display();
     }
 }
+
 // am i stupid this time????
 // g++ life.cpp -o life.exe -IC:/msys64/ucrt64/include -LC:/msys64/ucrt64/lib -lsfml-graphics -lsfml-window -lsfml-system
