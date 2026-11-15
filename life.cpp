@@ -1,3 +1,8 @@
+// Рождение: мёртвая клетка с ровно 3 живыми соседями оживает.
+// Выживание: живая клетка с 2 или 3 живыми соседями остаётся живой.
+// Смерть от одиночества: живая клетка с менее чем 2 соседями умирает.
+// Смерть от перенаселения: живая клетка с более чем 3 соседями умирает.
+
 #include <SFML/Graphics.hpp>
 #include <bits/stdc++.h>
 using namespace std;
@@ -48,10 +53,48 @@ void randomSpawn(vector<vector<int>>& grid)  {
     }
 }
 
+int countNeighbors(const vector<vector<int>>& grid, int x, int y) {
+    int rows = grid.size();
+    int cols = grid[0].size();
+    int count = 0;
+
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            if (dx == 0 && dy == 0) {
+                continue;
+            }
+
+            int nx = x + dx;
+            int ny = y + dy;
+
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                count += grid[ny][nx];
+            }
+        }
+    }
+    return count;
+}
+
+void step(vector<vector<int>>& grid) {
+    vector<vector<int>> next = grid;
+
+    for (int y = 0; y < grid.size(); y++) {
+        for (int x = 0; x < grid[y].size(); x++) {
+            int n = countNeighbors(grid, x, y);
+            if (grid[y][x] == 0 && n == 3) {
+                next[y][x] = 1;
+            }
+        }
+    }
+    grid = next;
+}
+
 int main() {
     const int cols = 80;
     const int rows = 60;
     const int cell = 10;
+
+    sf::Clock clock;
     vector<vector<int>> grid(rows, vector<int>(cols, 0)); // 60 строк 80 рядов
     randomSpawn(grid);
 
@@ -62,9 +105,13 @@ int main() {
                 window.close();
             }
         }
+        if (clock.getElapsedTime().asMilliseconds() > 100) {
+            step(grid);
+            clock.restart();
+        }
+
         window.clear(sf::Color::Black);
         print_grid(window, grid, cell);
-
         window.display();
     }
 }
