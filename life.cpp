@@ -43,8 +43,8 @@ void print_grid(sf::RenderWindow& window, const vector<vector<int>>& grid, int c
 void randomSpawn(vector<vector<int>>& grid)  {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> distCols(0, 79);
-    uniform_int_distribution<int> distRows(0, 59);
+    uniform_int_distribution<int> distCols(0, grid[0].size() - 1);
+    uniform_int_distribution<int> distRows(0, grid.size() - 1);
 
     for (int i = 0; i < 100; i++) {
         int d_cols = distCols(gen);
@@ -60,14 +60,14 @@ int countNeighbors(const vector<vector<int>>& grid, int x, int y) {
 
     for (int dy = -1; dy <= 1; dy++) {
         for (int dx = -1; dx <= 1; dx++) {
-            if (dx == 0 && dy == 0) {
+            if (dx == 0 && dy == 0) { // это сама клетка, ее скипнуть
                 continue;
             }
 
             int nx = x + dx;
             int ny = y + dy;
 
-            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) { 
                 count += grid[ny][nx];
             }
         }
@@ -75,14 +75,20 @@ int countNeighbors(const vector<vector<int>>& grid, int x, int y) {
     return count;
 }
 
-void step(vector<vector<int>>& grid) {
+void algo(vector<vector<int>>& grid) {
     vector<vector<int>> next = grid;
 
     for (int y = 0; y < grid.size(); y++) {
         for (int x = 0; x < grid[y].size(); x++) {
             int n = countNeighbors(grid, x, y);
+            // Рождение
             if (grid[y][x] == 0 && n == 3) {
                 next[y][x] = 1;
+            }
+            
+            // Смерть от одиночества & Смерть от перенаселения
+            if (grid[y][x] == 1 && n != 2 && n != 3) {
+                next[y][x] = 0; 
             }
         }
     }
@@ -105,8 +111,8 @@ int main() {
                 window.close();
             }
         }
-        if (clock.getElapsedTime().asMilliseconds() > 100) {
-            step(grid);
+        if (clock.getElapsedTime().asMilliseconds() > 3000) { // 100 standart
+            algo(grid);
             clock.restart();
         }
 
