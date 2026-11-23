@@ -6,10 +6,19 @@ using namespace std;
 class Snow {
 private:
     sf::CircleShape circle;
+    float time = 0.f;
+    float swaySpeed;
+    float swayAmount;
+
 public:
     Snow(sf::Vector2f startPos) : circle({10.f}) {
         circle.setFillColor(sf::Color::White);
         circle.setPosition(startPos);
+
+        // рандом в плюсах это смерть
+        time = static_cast<float>(rand()) / RAND_MAX * 6.28f;
+        swaySpeed = 1.f + static_cast<float>(rand()) / RAND_MAX * 2.f;
+        swayAmount = 20.f + static_cast<float>(rand()) / RAND_MAX * 40.f;
     }
 
     void draw(sf::RenderWindow& window) {
@@ -17,15 +26,20 @@ public:
     }
 
     void moveSnow(float speed_, float delta_time_) {
-        float distance = speed_ * delta_time_;
-        circle.move({0.f, distance});
+        time += delta_time_;
+
+        //float distance = speed_ * delta_time_;
+        float verticalSpeed = speed_;
+        float horizontalSpeed = sin(time * swaySpeed) * swayAmount; // синусовая функция
+        
+        circle.move({ horizontalSpeed * delta_time_, verticalSpeed * delta_time_});
     }
 };
 
 void randomSpawn(vector<Snow>& snow_in_game) {
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> distX(0, 760);
+    uniform_int_distribution<int> distX(0, 1970);
     uniform_int_distribution<int> distY(0, 1);
 
     float x = static_cast<float>(distX(gen));
@@ -37,20 +51,25 @@ void randomSpawn(vector<Snow>& snow_in_game) {
 int main() {
     sf::RenderWindow window(sf::VideoMode({1980, 1080}), "christmas");
     sf::Music music;
-    if (!music.openFromFile("C:/Ivan/git/cpp_games/music/Last_Christmas_music.mp3")) {
-        cout << "No music found";
+    if (!music.openFromFile("C:/Ivan/git/cpp_games/staff/Last_Christmas_music.mp3")) {
         return -1;
     }
     music.setLooping(true); // на повторе, вопрос как?
-    music.setVolume(20.f); 
+    music.setVolume(10.f); 
     music.play();
+
+    sf::Texture background_texture;
+    if (!background_texture.loadFromFile("C:/Ivan/git/cpp_games/staff/background.png")) {
+        return -1;
+    }
+    sf::Sprite background(background_texture);
 
     vector<Snow> snow_in_game;
 
     sf::Clock delta_clock;
     sf::Clock clock;
 
-    float speed = 300.f;
+    float speed = 250.f;
 
     while (window.isOpen()) {
         while (const optional event = window.pollEvent()) {
@@ -59,8 +78,11 @@ int main() {
             }
         }
         float delta_time = delta_clock.restart().asSeconds();
+
         window.clear(sf::Color::Black);
-        if (clock.getElapsedTime().asSeconds() >= 0.2f) {
+        window.draw(background);
+
+        if (clock.getElapsedTime().asSeconds() >= 0.15f) {
             randomSpawn(snow_in_game);
             clock.restart();
         }
