@@ -3,6 +3,18 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+class Snow {
+private:
+    sf::CircleShape circle;
+public:
+    Snow(sf::Vector2f startPos) : circle({10.f}) {
+        circle.setFillColor(sf::Color::White);
+        circle.setPosition(startPos);
+    }
+
+
+};
+
 int main() {
     sf::RenderWindow window(sf::VideoMode({800, 600}), "christmas");
     sf::Music music;
@@ -10,9 +22,8 @@ int main() {
         cout << "No music found";
         return -1;
     }
-
-    music.setLooping(true);
-    music.setVolume(20.f);
+    music.setLooping(true); // на повторе, вопрос как?
+    music.setVolume(20.f); 
     music.play();
 
     while (window.isOpen()) {
