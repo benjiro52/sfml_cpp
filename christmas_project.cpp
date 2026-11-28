@@ -218,18 +218,20 @@ int main() {
     Garland garland({900.f, 400.f}, 11);
     Snowman snowman({1360.f, 790.f});
 
-    sf::Music music;
-    if (!music.openFromFile("C:/Ivan/git/cpp_games/staff/Last_Christmas_music.mp3")) {
-        return -1;
-    }
-    music.setLooping(true); // на повторе, вопрос как?
-    music.setVolume(10.f); 
-    music.play();
+    sf::Music music1;
+    if (!music1.openFromFile("C:/Ivan/git/cpp_games/staff/Last_Christmas_music.mp3")) return -1;
+    sf::Music music2;
+    if (!music2.openFromFile("C:/Ivan/git/cpp_games/staff/Snowman_music.mp3")) return -1;
+    sf::Music music3;
+    if (!music3.openFromFile("C:/Ivan/git/cpp_games/staff/Jingle_Bell_Rock.mp3")) return -1;
+
+    //ласт кристмас на дефолте
+    music1.setLooping(true);
+    music1.setVolume(10.f); 
+    music1.play();
 
     sf::Texture background_texture;
-    if (!background_texture.loadFromFile("C:/Ivan/git/cpp_games/staff/background_1.jpg")) {
-        return -1;
-    }
+    if (!background_texture.loadFromFile("C:/Ivan/git/cpp_games/staff/background_1.jpg")) return -1;
     sf::Sprite background(background_texture);
 
     sf::Clock delta_clock;
@@ -248,6 +250,40 @@ int main() {
                     } else {
                         snowman.addNextCircle();
                     }
+                }
+            }
+            // музло
+            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                if (key->code == sf::Keyboard::Key::Num1) {
+                    music1.stop();
+                    music2.stop();
+                    music3.stop();
+
+                    music1.setLooping(true);
+                    music1.setVolume(10.f); 
+                    music1.play();
+                }
+            }
+            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                if (key->code == sf::Keyboard::Key::Num2) {
+                    music1.stop();
+                    music2.stop();
+                    music3.stop();
+
+                    music2.setLooping(true);
+                    music2.setVolume(10.f); 
+                    music2.play();
+                }
+            }
+            if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
+                if (key->code == sf::Keyboard::Key::Num3) {
+                    music1.stop();
+                    music2.stop();
+                    music3.stop();
+
+                    music3.setLooping(true);
+                    music3.setVolume(10.f); 
+                    music3.play();
                 }
             }
         }
